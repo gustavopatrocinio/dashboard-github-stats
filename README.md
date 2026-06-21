@@ -2,7 +2,7 @@
 
 A Vue 3 dashboard that fetches public data from the GitHub REST API. Search for any username and explore their profile, repository stats, and most used programming languages in a responsive pie chart.
 
-**Live demo:** [https://gustavopatrocinio.github.io/dashboard-github-stats/](https://gustavopatrocinio.github.io/dashboard-github-stats/)
+**Live demo:** [https://dashboard-github-stats.vercel.app/](https://dashboard-github-stats.vercel.app/)
 
 ## Features
 
