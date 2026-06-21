@@ -18,29 +18,43 @@ const client = axios.create({
   },
 })
 
-function createGitHubError(code, message) {
-  const error = new Error(message)
-  error.code = code
-  return error
+function isRateLimitResponse(error) {
+  const status = error.response?.status
+  const message = error.response?.data?.message ?? ''
+  const rateLimitRemaining = error.response?.headers?.['x-ratelimit-remaining']
+
+  return (
+    status === 403 &&
+    (message.toLowerCase().includes('rate limit') || rateLimitRemaining === '0')
+  )
 }
 
 function handleApiError(error) {
   const status = error.response?.status
   const message = error.response?.data?.message ?? ''
-  const rateLimitRemaining = error.response?.headers?.['x-ratelimit-remaining']
 
   if (status === 404) {
     throw createGitHubError(GITHUB_ERROR_CODES.USER_NOT_FOUND, message)
   }
 
-  if (
-    status === 403 &&
-    (message.toLowerCase().includes('rate limit') || rateLimitRemaining === '0')
-  ) {
-    throw createGitHubError(GITHUB_ERROR_CODES.RATE_LIMIT_EXCEEDED, message)
+  if (isRateLimitResponse(error)) {
+    const resetHeader = error.response?.headers?.['x-ratelimit-reset']
+    const resetAt = resetHeader ? Number(resetHeader) * 1000 : null
+
+    throw createGitHubError(GITHUB_ERROR_CODES.RATE_LIMIT_EXCEEDED, message, {
+      resetAt,
+      isAuthenticated: Boolean(import.meta.env.VITE_GITHUB_TOKEN),
+    })
   }
 
   throw error
+}
+
+function createGitHubError(code, message, details = {}) {
+  const error = new Error(message)
+  error.code = code
+  error.details = details
+  return error
 }
 
 export async function fetchUser(username) {
@@ -100,7 +114,10 @@ export async function fetchLanguagesForRepos(repos) {
 
   return Promise.all(
     topRepos.map((repo) =>
-      fetchRepoLanguages(repo.owner.login, repo.name).catch(() => ({})),
+      fetchRepoLanguages(repo.owner.login, repo.name).catch((error) => {
+        if (error.code === GITHUB_ERROR_CODES.RATE_LIMIT_EXCEEDED) throw error
+        return {}
+      }),
     ),
   )
 }

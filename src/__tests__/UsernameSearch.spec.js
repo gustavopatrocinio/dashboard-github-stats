@@ -32,11 +32,21 @@ describe('UsernameSearch', () => {
     expect(wrapper.find('[role="alert"]').text()).toContain('User not found')
   })
 
-  it('shows rate limit error message', () => {
+  it('shows rate limit error message for unauthenticated users', () => {
     const wrapper = mount(UsernameSearch, {
-      props: { error: GITHUB_ERROR_CODES.RATE_LIMIT_EXCEEDED },
+      props: {
+        error: {
+          code: GITHUB_ERROR_CODES.RATE_LIMIT_EXCEEDED,
+          isAuthenticated: false,
+          resetAt: new Date('2026-06-21T15:30:00').getTime(),
+        },
+      },
     })
 
-    expect(wrapper.find('[role="alert"]').text()).toContain('Rate limit exceeded')
+    const alert = wrapper.find('[role="alert"]').text()
+
+    expect(alert).toContain('60 requests/hour without authentication')
+    expect(alert).toContain('VITE_GITHUB_TOKEN')
+    expect(alert).toContain('Try again after')
   })
 })

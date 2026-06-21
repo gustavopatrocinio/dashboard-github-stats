@@ -29,14 +29,17 @@ export function useGitHubDashboard() {
       user.value = userData
       await loadLanguages(username)
     } catch (err) {
-      if (
-        err.code === GITHUB_ERROR_CODES.USER_NOT_FOUND ||
-        err.code === GITHUB_ERROR_CODES.RATE_LIMIT_EXCEEDED
-      ) {
-        error.value = err.code
+      if (err.code === GITHUB_ERROR_CODES.USER_NOT_FOUND) {
+        error.value = { code: err.code }
+      } else if (err.code === GITHUB_ERROR_CODES.RATE_LIMIT_EXCEEDED) {
+        error.value = {
+          code: err.code,
+          resetAt: err.details?.resetAt ?? null,
+          isAuthenticated: err.details?.isAuthenticated ?? false,
+        }
       } else {
         console.error(err)
-        error.value = 'UNKNOWN'
+        error.value = { code: 'UNKNOWN' }
       }
     } finally {
       loading.value = false

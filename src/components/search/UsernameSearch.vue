@@ -1,6 +1,6 @@
 <script setup>
 import { computed, ref } from 'vue'
-import { GITHUB_ERROR_MESSAGES } from '@/constants/githubErrors'
+import { getGitHubErrorMessage } from '@/constants/githubErrors'
 
 const props = defineProps({
   loading: {
@@ -8,7 +8,7 @@ const props = defineProps({
     default: false,
   },
   error: {
-    type: String,
+    type: [String, Object],
     default: null,
   },
 })
@@ -17,10 +17,7 @@ const emit = defineEmits(['search'])
 
 const username = ref('')
 
-const errorMessage = computed(() => {
-  if (!props.error) return null
-  return GITHUB_ERROR_MESSAGES[props.error] ?? 'An unexpected error occurred. Please try again.'
-})
+const errorMessage = computed(() => getGitHubErrorMessage(props.error))
 
 const isSubmitDisabled = computed(() => props.loading || !username.value.trim())
 
