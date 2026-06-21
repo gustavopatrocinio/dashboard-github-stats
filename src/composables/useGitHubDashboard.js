@@ -1,35 +1,33 @@
 import { ref } from 'vue'
 
+import { useGitHubLanguages } from '@/composables/useGitHubLanguages'
 import { GITHUB_ERROR_CODES } from '@/constants/githubErrors'
-import {
-  fetchUser,
-  fetchUserRepos,
-  fetchLanguagesForRepos,
-} from '@/services/githubApi'
-import { aggregateLanguages } from '@/utils/aggregateLanguages'
+import { fetchUser } from '@/services/githubApi'
 
 export function useGitHubDashboard() {
   const loading = ref(false)
   const error = ref(null)
   const user = ref(null)
-  const languages = ref([])
+
+  const {
+    languages,
+    reposAnalyzed,
+    totalPublicRepos,
+    loadingLanguages,
+    load: loadLanguages,
+    reset: resetLanguages,
+  } = useGitHubLanguages()
 
   async function search(username) {
     loading.value = true
     error.value = null
     user.value = null
-    languages.value = []
+    resetLanguages()
 
     try {
-      const [userData, repos] = await Promise.all([
-        fetchUser(username),
-        fetchUserRepos(username),
-      ])
-
+      const userData = await fetchUser(username)
       user.value = userData
-
-      const languageMaps = await fetchLanguagesForRepos(repos)
-      languages.value = aggregateLanguages(languageMaps)
+      await loadLanguages(username)
     } catch (err) {
       if (
         err.code === GITHUB_ERROR_CODES.USER_NOT_FOUND ||
@@ -47,9 +45,12 @@ export function useGitHubDashboard() {
 
   return {
     loading,
+    loadingLanguages,
     error,
     user,
     languages,
+    reposAnalyzed,
+    totalPublicRepos,
     search,
   }
 }

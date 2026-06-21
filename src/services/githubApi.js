@@ -1,8 +1,11 @@
 import axios from 'axios'
 
 import { GITHUB_ERROR_CODES } from '@/constants/githubErrors'
+import { aggregateLanguages } from '@/utils/aggregateLanguages'
 
 const MAX_REPOS_FOR_LANGUAGES = 30
+const MAX_REPO_PAGES = 10
+const REPOS_PER_PAGE = 100
 
 const client = axios.create({
   baseURL: 'https://api.github.com',
@@ -50,12 +53,28 @@ export async function fetchUser(username) {
   }
 }
 
-export async function fetchUserRepos(username) {
+export async function fetchPublicUserRepos(username) {
+  const repos = []
+
   try {
-    const { data } = await client.get(`/users/${encodeURIComponent(username)}/repos`, {
-      params: { per_page: 100, sort: 'updated', type: 'owner' },
-    })
-    return data
+    for (let page = 1; page <= MAX_REPO_PAGES; page += 1) {
+      const { data } = await client.get(`/users/${encodeURIComponent(username)}/repos`, {
+        params: {
+          per_page: REPOS_PER_PAGE,
+          page,
+          sort: 'updated',
+          type: 'owner',
+        },
+      })
+
+      if (!data.length) break
+
+      repos.push(...data.filter((repo) => !repo.private))
+
+      if (data.length < REPOS_PER_PAGE) break
+    }
+
+    return repos
   } catch (error) {
     if (error.code) throw error
     handleApiError(error)
@@ -63,8 +82,15 @@ export async function fetchUserRepos(username) {
 }
 
 export async function fetchRepoLanguages(owner, repo) {
-  const { data } = await client.get(`/repos/${encodeURIComponent(owner)}/${encodeURIComponent(repo)}/languages`)
-  return data
+  try {
+    const { data } = await client.get(
+      `/repos/${encodeURIComponent(owner)}/${encodeURIComponent(repo)}/languages`,
+    )
+    return data
+  } catch (error) {
+    if (error.code) throw error
+    handleApiError(error)
+  }
 }
 
 export async function fetchLanguagesForRepos(repos) {
@@ -77,4 +103,15 @@ export async function fetchLanguagesForRepos(repos) {
       fetchRepoLanguages(repo.owner.login, repo.name).catch(() => ({})),
     ),
   )
+}
+
+export async function fetchUserLanguageStats(username) {
+  const repos = await fetchPublicUserRepos(username)
+  const languageMaps = await fetchLanguagesForRepos(repos)
+
+  return {
+    languages: aggregateLanguages(languageMaps),
+    reposAnalyzed: Math.min(repos.length, MAX_REPOS_FOR_LANGUAGES),
+    totalPublicRepos: repos.length,
+  }
 }

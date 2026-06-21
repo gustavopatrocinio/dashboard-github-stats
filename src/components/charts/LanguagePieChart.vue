@@ -15,6 +15,18 @@ const props = defineProps({
     type: Array,
     default: () => [],
   },
+  reposAnalyzed: {
+    type: Number,
+    default: 0,
+  },
+  totalPublicRepos: {
+    type: Number,
+    default: 0,
+  },
+  loading: {
+    type: Boolean,
+    default: false,
+  },
 })
 
 const CHART_COLORS = [
@@ -28,7 +40,18 @@ const CHART_COLORS = [
   '#1a7f37',
   '#6639ba',
   '#9a6700',
+  '#656d76',
 ]
+
+const subtitle = computed(() => {
+  if (!props.reposAnalyzed) return null
+
+  if (props.totalPublicRepos > props.reposAnalyzed) {
+    return `Based on the top ${props.reposAnalyzed} of ${props.totalPublicRepos} public repositories`
+  }
+
+  return `Based on ${props.reposAnalyzed} public ${props.reposAnalyzed === 1 ? 'repository' : 'repositories'}`
+})
 
 const chartData = computed(() => ({
   labels: props.languages.map((language) => language.name),
@@ -69,9 +92,16 @@ const chartOptions = computed(() => ({
 
 <template>
   <section class="language-chart">
-    <h3 class="language-chart__title">Most used languages</h3>
+    <header class="language-chart__header">
+      <h3 class="language-chart__title">Most used languages</h3>
+      <p v-if="subtitle" class="language-chart__subtitle">{{ subtitle }}</p>
+    </header>
 
-    <div v-if="languages.length" class="language-chart__canvas">
+    <div v-if="loading" class="language-chart__loading" aria-live="polite">
+      Loading language data from public repositories…
+    </div>
+
+    <div v-else-if="languages.length" class="language-chart__canvas">
       <Pie :data="chartData" :options="chartOptions" />
     </div>
 
@@ -91,17 +121,28 @@ const chartOptions = computed(() => ({
   box-shadow: 0 1px 2px rgba(31, 35, 40, 0.04);
 }
 
+.language-chart__header {
+  margin-bottom: 1rem;
+}
+
 .language-chart__title {
-  margin: 0 0 1rem;
+  margin: 0;
   font-size: 1.125rem;
   font-weight: 700;
   color: #24292f;
+}
+
+.language-chart__subtitle {
+  margin: 0.375rem 0 0;
+  font-size: 0.8125rem;
+  color: #656d76;
 }
 
 .language-chart__canvas {
   height: 280px;
 }
 
+.language-chart__loading,
 .language-chart__empty {
   margin: 0;
   font-size: 0.9375rem;

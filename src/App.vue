@@ -5,7 +5,8 @@ import UsernameSearch from '@/components/search/UsernameSearch.vue'
 import UserStatsCards from '@/components/stats/UserStatsCards.vue'
 import { useGitHubDashboard } from '@/composables/useGitHubDashboard'
 
-const { loading, error, user, languages, search } = useGitHubDashboard()
+const { loading, loadingLanguages, error, user, languages, reposAnalyzed, totalPublicRepos, search } =
+  useGitHubDashboard()
 </script>
 
 <template>
@@ -20,7 +21,12 @@ const { loading, error, user, languages, search } = useGitHubDashboard()
     <section v-if="user" class="app__results">
       <UserProfileCard :user="user" />
       <UserStatsCards :user="user" />
-      <LanguagePieChart :languages="languages" />
+      <LanguagePieChart
+        :languages="languages"
+        :repos-analyzed="reposAnalyzed"
+        :total-public-repos="totalPublicRepos"
+        :loading="loadingLanguages"
+      />
     </section>
   </main>
 </template>
