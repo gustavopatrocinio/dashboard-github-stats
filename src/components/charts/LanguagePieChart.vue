@@ -8,6 +8,8 @@ import {
   Legend,
 } from 'chart.js'
 
+import { useMediaQuery } from '@/composables/useMediaQuery'
+
 ChartJS.register(ArcElement, Tooltip, Legend)
 
 const props = defineProps({
@@ -43,6 +45,8 @@ const CHART_COLORS = [
   '#656d76',
 ]
 
+const isMobile = useMediaQuery('(max-width: 640px)')
+
 const subtitle = computed(() => {
   if (!props.reposAnalyzed) return null
 
@@ -70,12 +74,19 @@ const chartData = computed(() => ({
 const chartOptions = computed(() => ({
   responsive: true,
   maintainAspectRatio: false,
+  layout: {
+    padding: isMobile.value ? 4 : 0,
+  },
   plugins: {
     legend: {
-      position: 'right',
+      position: isMobile.value ? 'bottom' : 'right',
+      align: 'center',
       labels: {
         boxWidth: 12,
-        padding: 12,
+        padding: isMobile.value ? 10 : 12,
+        font: {
+          size: isMobile.value ? 11 : 12,
+        },
       },
     },
     tooltip: {
@@ -146,6 +157,27 @@ const chartOptions = computed(() => ({
 .language-chart__empty {
   margin: 0;
   font-size: 0.9375rem;
+  line-height: 1.5;
   color: #656d76;
+}
+
+@media (max-width: 640px) {
+  .language-chart {
+    padding: 1rem;
+  }
+
+  .language-chart__title {
+    font-size: 1rem;
+  }
+
+  .language-chart__subtitle {
+    font-size: 0.75rem;
+    line-height: 1.4;
+  }
+
+  .language-chart__canvas {
+    height: min(420px, 70vh);
+    min-height: 300px;
+  }
 }
 </style>

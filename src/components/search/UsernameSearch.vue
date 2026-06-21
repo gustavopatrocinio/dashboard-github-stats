@@ -77,7 +77,7 @@ function handleSubmit() {
   flex-direction: column;
   gap: 0.5rem;
   width: 100%;
-  max-width: 32rem;
+  max-width: 48rem;
 }
 
 .username-search__label {
@@ -173,13 +173,22 @@ function handleSubmit() {
   }
 }
 
-@media (max-width: 480px) {
+@media (max-width: 640px) {
   .username-search__controls {
     flex-direction: column;
   }
 
   .username-search__button {
     width: 100%;
+    min-height: 2.75rem;
+  }
+
+  .username-search__input {
+    min-height: 2.75rem;
+  }
+
+  .username-search__error {
+    font-size: 0.8125rem;
   }
 }
 </style>

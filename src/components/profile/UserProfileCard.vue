@@ -78,6 +78,7 @@ const showUsername = computed(
 .user-profile__link {
   color: #0969da;
   text-decoration: none;
+  overflow-wrap: anywhere;
 }
 
 .user-profile__link:hover {
@@ -95,6 +96,7 @@ const showUsername = computed(
   font-size: 0.9375rem;
   line-height: 1.5;
   color: #24292f;
+  overflow-wrap: anywhere;
 }
 
 .user-profile__bio--empty {
@@ -102,11 +104,29 @@ const showUsername = computed(
   font-style: italic;
 }
 
-@media (max-width: 560px) {
+@media (max-width: 640px) {
   .user-profile__card {
     flex-direction: column;
     align-items: center;
+    padding: 1rem;
     text-align: center;
+  }
+
+  .user-profile__avatar {
+    width: 80px;
+    height: 80px;
+  }
+
+  .user-profile__name {
+    font-size: 1.25rem;
+  }
+
+  .user-profile__username {
+    font-size: 0.9375rem;
+  }
+
+  .user-profile__bio {
+    font-size: 0.875rem;
   }
 }
 </style>

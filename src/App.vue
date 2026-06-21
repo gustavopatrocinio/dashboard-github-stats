@@ -66,6 +66,26 @@ const { loading, loadingLanguages, error, user, languages, reposAnalyzed, totalP
   width: 100%;
   max-width: 48rem;
 }
+
+@media (max-width: 640px) {
+  .app {
+    gap: 1rem;
+    padding: 1rem 0.75rem 2rem;
+  }
+
+  .app__title {
+    font-size: 1.375rem;
+  }
+
+  .app__subtitle {
+    font-size: 0.8125rem;
+    line-height: 1.4;
+  }
+
+  .app__results {
+    gap: 0.75rem;
+  }
+}
 </style>
 
 <style>
