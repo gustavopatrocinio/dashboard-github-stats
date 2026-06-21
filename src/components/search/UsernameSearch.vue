@@ -19,7 +19,7 @@ const username = ref('')
 
 const errorMessage = computed(() => {
   if (!props.error) return null
-  return GITHUB_ERROR_MESSAGES[props.error] ?? 'Ocorreu um erro inesperado. Tente novamente.'
+  return GITHUB_ERROR_MESSAGES[props.error] ?? 'An unexpected error occurred. Please try again.'
 })
 
 const isSubmitDisabled = computed(() => props.loading || !username.value.trim())
@@ -34,7 +34,7 @@ function handleSubmit() {
 <template>
   <form class="username-search" @submit.prevent="handleSubmit">
     <label class="username-search__label" for="github-username">
-      Username do GitHub
+      GitHub username
     </label>
 
     <div class="username-search__controls">
@@ -46,7 +46,7 @@ function handleSubmit() {
         name="username"
         autocomplete="off"
         spellcheck="false"
-        placeholder="ex: octocat"
+        placeholder="e.g. octocat"
         :disabled="loading"
         aria-describedby="username-search-error"
       />
@@ -58,7 +58,7 @@ function handleSubmit() {
         :aria-busy="loading"
       >
         <span v-if="loading" class="username-search__spinner" aria-hidden="true" />
-        {{ loading ? 'Buscando…' : 'Buscar' }}
+        {{ loading ? 'Searching…' : 'Search' }}
       </button>
     </div>
 

@@ -21,7 +21,7 @@ describe('UsernameSearch', () => {
 
     expect(wrapper.find('button[type="submit"]').attributes('disabled')).toBeDefined()
     expect(wrapper.find('#github-username').attributes('disabled')).toBeDefined()
-    expect(wrapper.text()).toContain('Buscando…')
+    expect(wrapper.text()).toContain('Searching…')
   })
 
   it('shows user not found error message', () => {
@@ -29,7 +29,7 @@ describe('UsernameSearch', () => {
       props: { error: GITHUB_ERROR_CODES.USER_NOT_FOUND },
     })
 
-    expect(wrapper.find('[role="alert"]').text()).toContain('Usuário não encontrado')
+    expect(wrapper.find('[role="alert"]').text()).toContain('User not found')
   })
 
   it('shows rate limit error message', () => {
@@ -37,6 +37,6 @@ describe('UsernameSearch', () => {
       props: { error: GITHUB_ERROR_CODES.RATE_LIMIT_EXCEEDED },
     })
 
-    expect(wrapper.find('[role="alert"]').text()).toContain('Limite de requisições excedido')
+    expect(wrapper.find('[role="alert"]').text()).toContain('Rate limit exceeded')
   })
 })

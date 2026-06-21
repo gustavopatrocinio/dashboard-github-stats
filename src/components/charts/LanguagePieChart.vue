@@ -69,14 +69,14 @@ const chartOptions = computed(() => ({
 
 <template>
   <section class="language-chart">
-    <h3 class="language-chart__title">Linguagens mais usadas</h3>
+    <h3 class="language-chart__title">Most used languages</h3>
 
     <div v-if="languages.length" class="language-chart__canvas">
       <Pie :data="chartData" :options="chartOptions" />
     </div>
 
     <p v-else class="language-chart__empty">
-      Nenhuma linguagem encontrada nos repositórios públicos.
+      No languages found in public repositories.
     </p>
   </section>
 </template>
@@ -84,11 +84,11 @@ const chartOptions = computed(() => ({
 <style scoped>
 .language-chart {
   width: 100%;
-  max-width: 48rem;
   padding: 1.5rem;
   border: 1px solid #d0d7de;
   border-radius: 0.5rem;
   background-color: #ffffff;
+  box-shadow: 0 1px 2px rgba(31, 35, 40, 0.04);
 }
 
 .language-chart__title {
