@@ -6,6 +6,7 @@ import App from '../App.vue'
 describe('App', () => {
   it('mounts renders properly', () => {
     const wrapper = mount(App)
-    expect(wrapper.text()).toContain('You did it!')
+    expect(wrapper.text()).toContain('GitHub Stats Dashboard')
+    expect(wrapper.find('#github-username').exists()).toBe(true)
   })
 })
